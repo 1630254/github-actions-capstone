@@ -6,7 +6,6 @@ A production-ready CI/CD pipeline demonstrating automated testing, containerizat
 
 ## 🛠 Tech Stack
 - **Backend:** Python 3.11 (Flask)  
-- **Database:** PostgreSQL & Redis  
 - **Containerization:** Docker & Docker Buildx  
 - **CI/CD:** GitHub Actions (Reusable Workflows)  
 - **Registry:** Docker Hub  
