@@ -1,0 +1,49 @@
+name: Scheduled Health Check
+
+on:
+  schedule:
+    # Runs every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+    # Allows manual triggering for testing
+
+jobs:
+  periodic-health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Latest Docker Image
+        run: |
+          # Replace with our actual Docker Hub username/image
+          docker pull ${{ secrets.DOCKER_USERNAME }}/github-actions-capstone:latest
+
+      - name: Run Container
+        run: |
+          docker run -d --name health-check-container -p 5000:5000 ${{ secrets.DOCKER_USERNAME }}/github-actions-capstone:latest
+          sleep 5
+
+      - name: Verify Health Endpoint
+        id: check
+        continue-on-error: true
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000 || echo "404")
+          if [ "$RESPONSE" == "200" ]; then
+            echo "status=PASSED" >> $GITHUB_ENV
+            exit 0
+          else
+            echo "status=FAILED" >> $GITHUB_ENV
+            exit 1
+          fi
+
+      - name: Cleanup Container
+        if: always()
+        run: |
+          docker stop health-check-container
+          docker rm health-check-container
+
+      - name: Generate Summary
+        if: always()
+        run: |
+          echo "## Health Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image:** ${{ secrets.DOCKER_USERNAME }}/github-actions-capstone:latest" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ env.status || 'FAILED' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date)" >> $GITHUB_STEP_SUMMARY
