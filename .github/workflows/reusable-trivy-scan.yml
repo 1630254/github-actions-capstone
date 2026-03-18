@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        uses: actions/checkout@v6
 
       # DEBUG STEP: Let's see if the variables are correct
       - name: Debug Image Name
@@ -31,7 +31,7 @@ jobs:
           echo "Scanning image: ${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}"
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@18f2514ee57983f4466a195545c786e84760ba25
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           image-ref: "docker.io/${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}"
           format: 'sarif'
