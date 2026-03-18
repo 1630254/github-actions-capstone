@@ -20,8 +20,8 @@ jobs:
         # Pinning to v4.1.1
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: Dependency Review
-        # Pinning to v4.3.4
-        uses: actions/dependency-review-action@5a2ce3f5b92ee19cbb15521476d157eb11da855b
+        # Pinning to v4.8.3
+        uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803
         with:
           fail-on-severity: critical
 
