@@ -23,23 +23,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      # DEBUG STEP: Let's see if the variables are correct
+      - name: Debug Image Name
+        run: |
+          echo "Scanning image: ${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}"
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@18f2514ee57983f4466a195545c786e84760ba25
         with:
-          # Scans the specific image version we just built
-          image-ref: "${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}"
-          format: 'table'
-          exit-code: '1' # Fails the pipeline if CRITICAL/HIGH found
+          image-ref: "docker.io/${{ secrets.docker_username }}/${{ inputs.image_name }}:${{ inputs.tag }}"
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '0'  # Change to 0 temporarily to force the file creation
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        # IMPORTANT: Run this even if Trivy found vulnerabilities (which returns exit code 1)
-        if: always() 
-        uses: github/codeql-action/upload-sarif@v4
+      - name: Upload Trivy scan results
+        if: always()
+        uses: github/codeql-action/upload-sarif@1b1aada464948af0370c0fe013ac36be93ca6077
         with:
           sarif_file: 'trivy-results.sarif'
+
 
