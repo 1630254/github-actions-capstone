@@ -1,0 +1,57 @@
+name: Main CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # JOB 1: Continuous Integration
+  test:
+    uses: ./.github/workflows/reusable-build-test.yml
+    with:
+      python_version: '3.11'
+      run_tests: true
+
+  # JOB 2: Prepare variables (Short SHA)
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.vars.outputs.sha_short }}
+    steps:
+      - name: Generate Short SHA
+        id: vars
+        run: echo "sha_short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+  # JOB 3: Continuous Delivery (Docker)
+  build-and-push:
+    needs: [test, prep]
+    uses: ./.github/workflows/reusable-docker.yml
+    with:
+      image_name: "github-actions-capstone"
+      tag: "sha-${{ needs.prep.outputs.short_sha }}"
+    secrets:
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+      docker_token: ${{ secrets.DOCKER_TOKEN }}
+
+  # JOB 4: Security Gate (Trivy Scan)
+  security-scan:
+    needs: [build-and-push, prep]
+    uses: ./.github/workflows/reusable-trivy-scan.yml
+    with:
+      image_name: "github-actions-capstone"
+      tag: "sha-${{ needs.prep.outputs.short_sha }}"
+    secrets:
+      docker_username: ${{ secrets.DOCKER_USERNAME }}
+
+  # JOB 5: Deployment Simulation
+  deploy:
+    # Now depends on security-scan passing
+    needs: [security-scan, prep]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploying to Production
+        run: |
+          echo "Deploying image: sha-${{ needs.prep.outputs.short_sha }}"
+          echo "Status: Security verified. Deployment initiated."
