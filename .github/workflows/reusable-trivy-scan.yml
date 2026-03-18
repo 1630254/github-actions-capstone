@@ -37,10 +37,9 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        # 4. Added step to upload the SARIF file
-        # Pinned SHA for upload-sarif (v3.24.6)
-        uses: github/codeql-action/upload-sarif@v4
+        # IMPORTANT: Run this even if Trivy found vulnerabilities (which returns exit code 1)
+        if: always() 
+        uses: github/codeql-action/upload-sarif@1b1aada464948af0370c0fe013ac36be93ca6077
         with:
           sarif_file: 'trivy-results.sarif'
-
 
