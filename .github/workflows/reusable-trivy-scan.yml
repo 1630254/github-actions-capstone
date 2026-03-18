@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload Trivy scan results
         if: always()
-        uses: github/codeql-action/upload-sarif@1b1aada464948af0370c0fe013ac36be93ca6077
+        uses: github/codeql-action/upload-sarif@v3.24.6
         with:
           sarif_file: 'trivy-results.sarif'
 
