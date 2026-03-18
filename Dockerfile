@@ -8,7 +8,9 @@ RUN apt-get update && apt-get install -y build-essential gcc
 
 # Install dependencies into a temporary location
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+#RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt \
+    && pip install --upgrade "wheel>=0.46.2" "jaraco.context>=6.1.0"
 
 
 # Stage 2: Runner
