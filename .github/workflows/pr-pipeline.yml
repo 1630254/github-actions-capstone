@@ -1,4 +1,4 @@
-name: Pull Request Pipeline
+ame: Pull Request Pipeline
 
 on:
   pull_request:
@@ -6,6 +6,11 @@ on:
       - main
     types: [opened, synchronize]
 
+# STRATEGY: Limit permissions to only what is strictly necessary
+permissions:
+  contents: read          # Needed to checkout and scan code
+  pull-requests: write    # Needed to post the PR status comment
+  
 jobs:
   # 1. NEW: Security Gate - Dependency Review
   dependency-review:
