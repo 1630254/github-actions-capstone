@@ -18,6 +18,10 @@ on:
         description: "Outcome of the build and health check"
         value: ${{ jobs.build-and-test.outputs.status }}
 
+# STRATEGY: Maximum Lockdown
+permissions:
+  contents: read          # The only permission needed for testing
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
