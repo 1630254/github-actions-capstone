@@ -9,7 +9,6 @@ COPY requirements.txt .
 
 # Combine the installs and ensure EVERYTHING goes to /install
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt \
-    && pip install --no-cache-dir --prefix=/install --upgrade "wheel>=0.46.2" "jaraco.context>=6.1.0"
 
 # Stage 2: Runner
 FROM python:3.11-slim AS runner
