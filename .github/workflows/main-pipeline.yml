@@ -37,6 +37,10 @@ jobs:
   # JOB 4: Security Gate (Trivy Scan)
   security-scan:
     needs: [build-and-push, prep]
+    # ADD THIS PERMISSIONS BLOCK:
+    permissions:
+      contents: read
+      security-events: write  # Essential for uploading to the Security tab
     uses: ./.github/workflows/reusable-trivy-scan.yml
     with:
       image_name: "github-actions-capstone"

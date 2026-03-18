@@ -13,6 +13,11 @@ on:
       docker_username:
         required: true
 
+# 1. Permissions Lockdown
+permissions:
+  contents: read
+  security-events: write  # Required to upload results to the Security tab
+
 jobs:
   trivy-scan:
     runs-on: ubuntu-latest
@@ -30,5 +35,12 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        # 4. Added step to upload the SARIF file
+        # Pinned SHA for upload-sarif (v3.24.6)
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'
 
 
