@@ -30,10 +30,12 @@ jobs:
     
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        # Pinning to v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        # Pinning to v5.0.0
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ee4f39ef2b9c
         with:
           python-version: ${{ inputs.python_version }}
 
