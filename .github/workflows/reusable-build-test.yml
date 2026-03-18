@@ -34,8 +34,8 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Set up Python
-        # Pinning to v5.0.0
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ee4f39ef2b9c
+        # Pinning to v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: ${{ inputs.python_version }}
 
