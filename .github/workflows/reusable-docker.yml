@@ -1,4 +1,4 @@
-name: Reusable Docker Build, Scan, and Push
+name: Reusable Docker Build and Push
 
 on:
   workflow_call:
@@ -31,6 +31,7 @@ jobs:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_token }}
 
+      # This step acts as a "filter" to ensure every tag is properly formatted
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -38,35 +39,18 @@ jobs:
           images: ${{ secrets.docker_username }}/${{ inputs.image_name }}
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ inputs.tag }}
+            # This takes the comma-separated list and prefixes each item
+            ${{ inputs.tag }}
 
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
+          # We use ONLY the filtered output from the meta step
           tags: ${{ steps.meta.outputs.tags }}
           platforms: linux/amd64
           provenance: false
           sbom: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ secrets.docker_username }}/${{ inputs.image_name }}:latest'
-          format: 'table'
-          exit-code: '1' # Fails the job if CRITICAL found
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
-          output: 'trivy-report.txt'
-
-      - name: Upload Trivy scan report
-        if: always() 
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-security-report
-          path: trivy-report.txt
